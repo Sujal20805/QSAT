@@ -1,0 +1,1764 @@
+{
+    "0ml": {
+        "pH": [
+            {
+                "feature": "645",
+                "importance": 47.488293004222214
+            },
+            {
+                "feature": "410",
+                "importance": 38.404788290616125
+            },
+            {
+                "feature": "435",
+                "importance": 31.79739836929366
+            },
+            {
+                "feature": "560",
+                "importance": 24.940100842155516
+            },
+            {
+                "feature": "535",
+                "importance": 17.282095465343446
+            },
+            {
+                "feature": "510",
+                "importance": 15.379379842896014
+            },
+            {
+                "feature": "900",
+                "importance": 13.163750410079956
+            },
+            {
+                "feature": "680",
+                "importance": 11.518379041925073
+            },
+            {
+                "feature": "860",
+                "importance": 9.407416518311948
+            },
+            {
+                "feature": "585",
+                "importance": 8.96144480863586
+            },
+            {
+                "feature": "610",
+                "importance": 8.382069201790728
+            },
+            {
+                "feature": "810",
+                "importance": 7.827700454276055
+            },
+            {
+                "feature": "460",
+                "importance": 6.868684825021774
+            },
+            {
+                "feature": "705",
+                "importance": 3.2659469111822546
+            },
+            {
+                "feature": "760",
+                "importance": 2.3392487061209977
+            },
+            {
+                "feature": "485",
+                "importance": 1.6238720098044723
+            },
+            {
+                "feature": "730",
+                "importance": 1.498898746445775
+            },
+            {
+                "feature": "940",
+                "importance": 0.6611503008753061
+            }
+        ],
+        "nitro": [
+            {
+                "feature": "560",
+                "importance": 0.6021875904245008
+            },
+            {
+                "feature": "645",
+                "importance": 0.39597982274441357
+            },
+            {
+                "feature": "510",
+                "importance": 0.2183341555061742
+            },
+            {
+                "feature": "460",
+                "importance": 0.15782998832282055
+            },
+            {
+                "feature": "435",
+                "importance": 0.07371578230165156
+            },
+            {
+                "feature": "410",
+                "importance": 0.06237832623832114
+            },
+            {
+                "feature": "585",
+                "importance": 0.04188372176284139
+            },
+            {
+                "feature": "860",
+                "importance": 0.029556735011075797
+            },
+            {
+                "feature": "730",
+                "importance": 0.024262929480987093
+            },
+            {
+                "feature": "610",
+                "importance": 0.021395992481980902
+            },
+            {
+                "feature": "535",
+                "importance": 0.0118749073401067
+            },
+            {
+                "feature": "810",
+                "importance": 0.007384131229897066
+            },
+            {
+                "feature": "705",
+                "importance": 0.0041673251758719485
+            },
+            {
+                "feature": "485",
+                "importance": 0.0018821154958097509
+            },
+            {
+                "feature": "900",
+                "importance": 0.0002602158215354778
+            },
+            {
+                "feature": "680",
+                "importance": 0.00018788408953589414
+            },
+            {
+                "feature": "940",
+                "importance": 4.373795553299503e-05
+            },
+            {
+                "feature": "760",
+                "importance": 1.8607041661836307e-06
+            }
+        ],
+        "phosphorus": [
+            {
+                "feature": "560",
+                "importance": 1.1046056271661153
+            },
+            {
+                "feature": "645",
+                "importance": 0.7283269933095364
+            },
+            {
+                "feature": "510",
+                "importance": 0.39599600451104533
+            },
+            {
+                "feature": "460",
+                "importance": 0.28410687483443
+            },
+            {
+                "feature": "435",
+                "importance": 0.1338132896921401
+            },
+            {
+                "feature": "410",
+                "importance": 0.11314643022333801
+            },
+            {
+                "feature": "585",
+                "importance": 0.07537660936757284
+            },
+            {
+                "feature": "860",
+                "importance": 0.05279670137601716
+            },
+            {
+                "feature": "730",
+                "importance": 0.04399969795862165
+            },
+            {
+                "feature": "610",
+                "importance": 0.04014742560096367
+            },
+            {
+                "feature": "535",
+                "importance": 0.021275392362044312
+            },
+            {
+                "feature": "810",
+                "importance": 0.013145448180668484
+            },
+            {
+                "feature": "705",
+                "importance": 0.008201529497879785
+            },
+            {
+                "feature": "485",
+                "importance": 0.003770296084142564
+            },
+            {
+                "feature": "900",
+                "importance": 0.00047056542855086005
+            },
+            {
+                "feature": "680",
+                "importance": 0.0004106662553593376
+            },
+            {
+                "feature": "760",
+                "importance": 1.454800355867882e-05
+            },
+            {
+                "feature": "940",
+                "importance": 1.4115740043507685e-07
+            }
+        ],
+        "potassium": [
+            {
+                "feature": "560",
+                "importance": 7.037713748181415
+            },
+            {
+                "feature": "645",
+                "importance": 4.491023299558898
+            },
+            {
+                "feature": "510",
+                "importance": 2.4613969173766366
+            },
+            {
+                "feature": "460",
+                "importance": 1.867646220783861
+            },
+            {
+                "feature": "435",
+                "importance": 0.8362451038157833
+            },
+            {
+                "feature": "585",
+                "importance": 0.7485364441327793
+            },
+            {
+                "feature": "410",
+                "importance": 0.7300109178838887
+            },
+            {
+                "feature": "860",
+                "importance": 0.3408581652161611
+            },
+            {
+                "feature": "730",
+                "importance": 0.29143743306132014
+            },
+            {
+                "feature": "610",
+                "importance": 0.21738816399704894
+            },
+            {
+                "feature": "535",
+                "importance": 0.16824987320149987
+            },
+            {
+                "feature": "810",
+                "importance": 0.08799641142681437
+            },
+            {
+                "feature": "705",
+                "importance": 0.049978324394673014
+            },
+            {
+                "feature": "485",
+                "importance": 0.025315757227595524
+            },
+            {
+                "feature": "680",
+                "importance": 0.002203391346807435
+            },
+            {
+                "feature": "900",
+                "importance": 0.0007091466099610082
+            },
+            {
+                "feature": "760",
+                "importance": 0.00011165831605665122
+            },
+            {
+                "feature": "940",
+                "importance": 8.093442938850517e-05
+            }
+        ],
+        "capacityMoist": [
+            {
+                "feature": "645",
+                "importance": 1382332.514503479
+            },
+            {
+                "feature": "560",
+                "importance": 1330142.0130615234
+            },
+            {
+                "feature": "510",
+                "importance": 678854.0092086792
+            },
+            {
+                "feature": "435",
+                "importance": 408563.3583755493
+            },
+            {
+                "feature": "460",
+                "importance": 320176.0215110779
+            },
+            {
+                "feature": "585",
+                "importance": 287755.20095062256
+            },
+            {
+                "feature": "610",
+                "importance": 250701.6276626587
+            },
+            {
+                "feature": "410",
+                "importance": 238864.98682403564
+            },
+            {
+                "feature": "680",
+                "importance": 129057.54026031494
+            },
+            {
+                "feature": "900",
+                "importance": 125218.31536102295
+            },
+            {
+                "feature": "860",
+                "importance": 119710.7380065918
+            },
+            {
+                "feature": "730",
+                "importance": 101205.06115341187
+            },
+            {
+                "feature": "535",
+                "importance": 75556.21925735474
+            },
+            {
+                "feature": "810",
+                "importance": 63556.582359313965
+            },
+            {
+                "feature": "485",
+                "importance": 52364.721603393555
+            },
+            {
+                "feature": "705",
+                "importance": 47264.18531036377
+            },
+            {
+                "feature": "760",
+                "importance": 34235.75309753418
+            },
+            {
+                "feature": "940",
+                "importance": 2590.4619140625
+            }
+        ],
+        "temperature": [
+            {
+                "feature": "900",
+                "importance": 1130.2349002272822
+            },
+            {
+                "feature": "460",
+                "importance": 1100.8002488892525
+            },
+            {
+                "feature": "645",
+                "importance": 839.5058081643656
+            },
+            {
+                "feature": "435",
+                "importance": 601.211522938218
+            },
+            {
+                "feature": "410",
+                "importance": 310.5419719731435
+            },
+            {
+                "feature": "860",
+                "importance": 234.76646303094458
+            },
+            {
+                "feature": "730",
+                "importance": 215.6759063731879
+            },
+            {
+                "feature": "510",
+                "importance": 177.02782701561227
+            },
+            {
+                "feature": "585",
+                "importance": 166.03917205426842
+            },
+            {
+                "feature": "560",
+                "importance": 99.49839080963284
+            },
+            {
+                "feature": "810",
+                "importance": 71.93554597673938
+            },
+            {
+                "feature": "705",
+                "importance": 70.09647677699104
+            },
+            {
+                "feature": "680",
+                "importance": 59.27951723302249
+            },
+            {
+                "feature": "610",
+                "importance": 48.091542626265436
+            },
+            {
+                "feature": "535",
+                "importance": 29.594059255323373
+            },
+            {
+                "feature": "485",
+                "importance": 10.336260333657265
+            },
+            {
+                "feature": "760",
+                "importance": 5.7689759116619825
+            },
+            {
+                "feature": "940",
+                "importance": 0.13459989801049232
+            }
+        ],
+        "moisture": [
+            {
+                "feature": "560",
+                "importance": 12565.534532351297
+            },
+            {
+                "feature": "645",
+                "importance": 7835.235412909851
+            },
+            {
+                "feature": "510",
+                "importance": 4251.7246918939045
+            },
+            {
+                "feature": "460",
+                "importance": 3129.4707262455954
+            },
+            {
+                "feature": "435",
+                "importance": 1485.2953912350781
+            },
+            {
+                "feature": "585",
+                "importance": 1235.4293142578724
+            },
+            {
+                "feature": "410",
+                "importance": 1192.2327920600258
+            },
+            {
+                "feature": "860",
+                "importance": 616.5402327288723
+            },
+            {
+                "feature": "730",
+                "importance": 481.4632735483562
+            },
+            {
+                "feature": "610",
+                "importance": 373.1341378436196
+            },
+            {
+                "feature": "535",
+                "importance": 269.6493490620746
+            },
+            {
+                "feature": "810",
+                "importance": 139.52509282536153
+            },
+            {
+                "feature": "705",
+                "importance": 65.6234970700869
+            },
+            {
+                "feature": "485",
+                "importance": 36.719930835094296
+            },
+            {
+                "feature": "680",
+                "importance": 3.5718448373372245
+            },
+            {
+                "feature": "900",
+                "importance": 2.6864358390303265
+            },
+            {
+                "feature": "940",
+                "importance": 1.096811031433731
+            },
+            {
+                "feature": "760",
+                "importance": 0.18205853167616937
+            }
+        ],
+        "electricalConductivity": [
+            {
+                "feature": "560",
+                "importance": 120.56873273322927
+            },
+            {
+                "feature": "645",
+                "importance": 80.17283054644238
+            },
+            {
+                "feature": "510",
+                "importance": 44.26940051605091
+            },
+            {
+                "feature": "460",
+                "importance": 31.440420347044455
+            },
+            {
+                "feature": "435",
+                "importance": 14.756481025941644
+            },
+            {
+                "feature": "410",
+                "importance": 12.682597787423802
+            },
+            {
+                "feature": "585",
+                "importance": 8.323100506699053
+            },
+            {
+                "feature": "860",
+                "importance": 6.004266755217641
+            },
+            {
+                "feature": "730",
+                "importance": 4.949213542954583
+            },
+            {
+                "feature": "610",
+                "importance": 4.2699266946047505
+            },
+            {
+                "feature": "535",
+                "importance": 2.4348906139217106
+            },
+            {
+                "feature": "810",
+                "importance": 1.4611223964553184
+            },
+            {
+                "feature": "705",
+                "importance": 0.7697369497466446
+            },
+            {
+                "feature": "485",
+                "importance": 0.4467151561448626
+            },
+            {
+                "feature": "900",
+                "importance": 0.05438829263995248
+            },
+            {
+                "feature": "680",
+                "importance": 0.03970657633912335
+            },
+            {
+                "feature": "940",
+                "importance": 0.005141300576724461
+            },
+            {
+                "feature": "760",
+                "importance": 0.0013336771564545005
+            }
+        ]
+    },
+    "25ml": {
+        "pH": [
+            {
+                "feature": "410",
+                "importance": 44.19551187381148
+            },
+            {
+                "feature": "645",
+                "importance": 33.127000629901886
+            },
+            {
+                "feature": "585",
+                "importance": 30.78034247085452
+            },
+            {
+                "feature": "610",
+                "importance": 28.899429720826447
+            },
+            {
+                "feature": "510",
+                "importance": 26.48946536052972
+            },
+            {
+                "feature": "460",
+                "importance": 23.229800124652684
+            },
+            {
+                "feature": "900",
+                "importance": 18.65836736280471
+            },
+            {
+                "feature": "860",
+                "importance": 16.414859486743808
+            },
+            {
+                "feature": "535",
+                "importance": 16.306241646409035
+            },
+            {
+                "feature": "680",
+                "importance": 14.672862654086202
+            },
+            {
+                "feature": "435",
+                "importance": 13.226500858552754
+            },
+            {
+                "feature": "560",
+                "importance": 10.546166997868568
+            },
+            {
+                "feature": "485",
+                "importance": 8.384482614696026
+            },
+            {
+                "feature": "705",
+                "importance": 4.82457999419421
+            },
+            {
+                "feature": "760",
+                "importance": 3.870510471984744
+            },
+            {
+                "feature": "810",
+                "importance": 2.5047433711588383
+            },
+            {
+                "feature": "730",
+                "importance": 1.6749894972890615
+            },
+            {
+                "feature": "940",
+                "importance": 0.2795310951769352
+            }
+        ],
+        "nitro": [
+            {
+                "feature": "410",
+                "importance": 0.6635626940192765
+            },
+            {
+                "feature": "560",
+                "importance": 0.20878015156404217
+            },
+            {
+                "feature": "510",
+                "importance": 0.20849653669142754
+            },
+            {
+                "feature": "645",
+                "importance": 0.17319685257825768
+            },
+            {
+                "feature": "585",
+                "importance": 0.09545606353094627
+            },
+            {
+                "feature": "900",
+                "importance": 0.08661031516840012
+            },
+            {
+                "feature": "460",
+                "importance": 0.07425235033156241
+            },
+            {
+                "feature": "680",
+                "importance": 0.059994508402269275
+            },
+            {
+                "feature": "810",
+                "importance": 0.05242185378938302
+            },
+            {
+                "feature": "610",
+                "importance": 0.05221098321590034
+            },
+            {
+                "feature": "535",
+                "importance": 0.04774564162198658
+            },
+            {
+                "feature": "860",
+                "importance": 0.0423012940764238
+            },
+            {
+                "feature": "485",
+                "importance": 0.040713378746659146
+            },
+            {
+                "feature": "435",
+                "importance": 0.024917949611335644
+            },
+            {
+                "feature": "730",
+                "importance": 0.021997286526584503
+            },
+            {
+                "feature": "760",
+                "importance": 0.014901355825713836
+            },
+            {
+                "feature": "705",
+                "importance": 0.014147064275675802
+            },
+            {
+                "feature": "940",
+                "importance": 0.002793786410620669
+            }
+        ],
+        "phosphorus": [
+            {
+                "feature": "410",
+                "importance": 1.2023903949286705
+            },
+            {
+                "feature": "560",
+                "importance": 0.41091701508821643
+            },
+            {
+                "feature": "645",
+                "importance": 0.3757157609989008
+            },
+            {
+                "feature": "510",
+                "importance": 0.36519173974738806
+            },
+            {
+                "feature": "585",
+                "importance": 0.19957377517403074
+            },
+            {
+                "feature": "900",
+                "importance": 0.18014372664765688
+            },
+            {
+                "feature": "460",
+                "importance": 0.15927539832955517
+            },
+            {
+                "feature": "610",
+                "importance": 0.12849627301056898
+            },
+            {
+                "feature": "680",
+                "importance": 0.1274966606097223
+            },
+            {
+                "feature": "810",
+                "importance": 0.12229078793507142
+            },
+            {
+                "feature": "535",
+                "importance": 0.07980595418371195
+            },
+            {
+                "feature": "485",
+                "importance": 0.06421133117009958
+            },
+            {
+                "feature": "860",
+                "importance": 0.06251721103762975
+            },
+            {
+                "feature": "435",
+                "importance": 0.052179378200889914
+            },
+            {
+                "feature": "730",
+                "importance": 0.03280981108764536
+            },
+            {
+                "feature": "705",
+                "importance": 0.02814182557995082
+            },
+            {
+                "feature": "760",
+                "importance": 0.023134742254569574
+            },
+            {
+                "feature": "940",
+                "importance": 0.004293435798899736
+            }
+        ],
+        "potassium": [
+            {
+                "feature": "410",
+                "importance": 7.947476755554817
+            },
+            {
+                "feature": "560",
+                "importance": 2.47340613311826
+            },
+            {
+                "feature": "645",
+                "importance": 2.2970208472470404
+            },
+            {
+                "feature": "510",
+                "importance": 2.160415463593381
+            },
+            {
+                "feature": "585",
+                "importance": 1.3015382251651317
+            },
+            {
+                "feature": "460",
+                "importance": 1.0715147607625113
+            },
+            {
+                "feature": "900",
+                "importance": 0.8382878968695877
+            },
+            {
+                "feature": "680",
+                "importance": 0.7208793564277585
+            },
+            {
+                "feature": "610",
+                "importance": 0.6746449519459929
+            },
+            {
+                "feature": "535",
+                "importance": 0.6267280707397731
+            },
+            {
+                "feature": "810",
+                "importance": 0.5464645983884111
+            },
+            {
+                "feature": "485",
+                "importance": 0.4192812620640325
+            },
+            {
+                "feature": "860",
+                "importance": 0.39475708550889976
+            },
+            {
+                "feature": "435",
+                "importance": 0.3252216300170403
+            },
+            {
+                "feature": "730",
+                "importance": 0.25471619883319363
+            },
+            {
+                "feature": "760",
+                "importance": 0.1361882198107196
+            },
+            {
+                "feature": "705",
+                "importance": 0.11337699242358212
+            },
+            {
+                "feature": "940",
+                "importance": 0.025405115797184408
+            }
+        ],
+        "capacityMoist": [
+            {
+                "feature": "680",
+                "importance": 4278162.531629562
+            },
+            {
+                "feature": "860",
+                "importance": 4247907.711990356
+            },
+            {
+                "feature": "510",
+                "importance": 3042439.0127944946
+            },
+            {
+                "feature": "410",
+                "importance": 2978418.9251556396
+            },
+            {
+                "feature": "610",
+                "importance": 2315117.518108368
+            },
+            {
+                "feature": "460",
+                "importance": 2178489.1796875
+            },
+            {
+                "feature": "645",
+                "importance": 1775567.314956665
+            },
+            {
+                "feature": "730",
+                "importance": 1456334.2592544556
+            },
+            {
+                "feature": "435",
+                "importance": 781373.1795654297
+            },
+            {
+                "feature": "900",
+                "importance": 695368.4417877197
+            },
+            {
+                "feature": "485",
+                "importance": 543240.2111663818
+            },
+            {
+                "feature": "585",
+                "importance": 378323.7989692688
+            },
+            {
+                "feature": "535",
+                "importance": 335711.50112724304
+            },
+            {
+                "feature": "810",
+                "importance": 279701.9138183594
+            },
+            {
+                "feature": "705",
+                "importance": 264490.87956237793
+            },
+            {
+                "feature": "760",
+                "importance": 131413.3985824585
+            },
+            {
+                "feature": "560",
+                "importance": 78247.09340667725
+            },
+            {
+                "feature": "940",
+                "importance": 345.5849914550781
+            }
+        ],
+        "temperature": [
+            {
+                "feature": "860",
+                "importance": 1159.6326007213793
+            },
+            {
+                "feature": "435",
+                "importance": 963.0721147246659
+            },
+            {
+                "feature": "680",
+                "importance": 838.3971693497151
+            },
+            {
+                "feature": "645",
+                "importance": 551.2499415222555
+            },
+            {
+                "feature": "900",
+                "importance": 515.3499600179493
+            },
+            {
+                "feature": "535",
+                "importance": 380.33114286419004
+            },
+            {
+                "feature": "760",
+                "importance": 351.39101149886847
+            },
+            {
+                "feature": "460",
+                "importance": 336.6094796946272
+            },
+            {
+                "feature": "810",
+                "importance": 257.9602599143982
+            },
+            {
+                "feature": "510",
+                "importance": 214.01890115858987
+            },
+            {
+                "feature": "410",
+                "importance": 203.20027477573603
+            },
+            {
+                "feature": "610",
+                "importance": 126.1899286294356
+            },
+            {
+                "feature": "705",
+                "importance": 62.460712818428874
+            },
+            {
+                "feature": "560",
+                "importance": 55.74027585610747
+            },
+            {
+                "feature": "585",
+                "importance": 33.53158409614116
+            },
+            {
+                "feature": "485",
+                "importance": 32.04220288200304
+            },
+            {
+                "feature": "730",
+                "importance": 17.747529270127416
+            },
+            {
+                "feature": "940",
+                "importance": 0.8925239890813828
+            }
+        ],
+        "moisture": [
+            {
+                "feature": "510",
+                "importance": 20757.465208232403
+            },
+            {
+                "feature": "410",
+                "importance": 15343.11771069467
+            },
+            {
+                "feature": "645",
+                "importance": 11092.769418001175
+            },
+            {
+                "feature": "460",
+                "importance": 5764.257476449013
+            },
+            {
+                "feature": "860",
+                "importance": 5629.845064176712
+            },
+            {
+                "feature": "435",
+                "importance": 4729.33933442086
+            },
+            {
+                "feature": "900",
+                "importance": 4495.734390601516
+            },
+            {
+                "feature": "810",
+                "importance": 2873.93822658062
+            },
+            {
+                "feature": "610",
+                "importance": 1792.7248857952654
+            },
+            {
+                "feature": "680",
+                "importance": 1214.7292958796024
+            },
+            {
+                "feature": "535",
+                "importance": 940.0767074646428
+            },
+            {
+                "feature": "560",
+                "importance": 925.2314259093255
+            },
+            {
+                "feature": "730",
+                "importance": 681.2074094265699
+            },
+            {
+                "feature": "585",
+                "importance": 666.2399314641953
+            },
+            {
+                "feature": "485",
+                "importance": 542.0186324864626
+            },
+            {
+                "feature": "705",
+                "importance": 219.1031793653965
+            },
+            {
+                "feature": "760",
+                "importance": 134.04008004814386
+            },
+            {
+                "feature": "940",
+                "importance": 35.24866507947445
+            }
+        ],
+        "electricalConductivity": [
+            {
+                "feature": "410",
+                "importance": 151.57594340102514
+            },
+            {
+                "feature": "510",
+                "importance": 94.52756415074691
+            },
+            {
+                "feature": "645",
+                "importance": 48.64662248711102
+            },
+            {
+                "feature": "705",
+                "importance": 30.177186409477144
+            },
+            {
+                "feature": "460",
+                "importance": 25.725850108079612
+            },
+            {
+                "feature": "610",
+                "importance": 21.44171972456388
+            },
+            {
+                "feature": "435",
+                "importance": 18.978283890057355
+            },
+            {
+                "feature": "900",
+                "importance": 14.716034451499581
+            },
+            {
+                "feature": "810",
+                "importance": 12.359042512718588
+            },
+            {
+                "feature": "680",
+                "importance": 12.225035471841693
+            },
+            {
+                "feature": "585",
+                "importance": 11.432535371859558
+            },
+            {
+                "feature": "485",
+                "importance": 10.623128924518824
+            },
+            {
+                "feature": "560",
+                "importance": 10.5666809551185
+            },
+            {
+                "feature": "535",
+                "importance": 8.662182508443948
+            },
+            {
+                "feature": "860",
+                "importance": 6.263828415656462
+            },
+            {
+                "feature": "760",
+                "importance": 4.81100366730243
+            },
+            {
+                "feature": "730",
+                "importance": 2.2948252647183836
+            },
+            {
+                "feature": "940",
+                "importance": 0.40114240162074566
+            }
+        ]
+    },
+    "50ml": {
+        "pH": [
+            {
+                "feature": "410",
+                "importance": 43.17118111089803
+            },
+            {
+                "feature": "460",
+                "importance": 42.5974510894157
+            },
+            {
+                "feature": "645",
+                "importance": 33.478340581059456
+            },
+            {
+                "feature": "435",
+                "importance": 32.68422486819327
+            },
+            {
+                "feature": "510",
+                "importance": 19.200178725644946
+            },
+            {
+                "feature": "680",
+                "importance": 15.933095782034798
+            },
+            {
+                "feature": "860",
+                "importance": 14.6541398759
+            },
+            {
+                "feature": "610",
+                "importance": 11.811576031614095
+            },
+            {
+                "feature": "560",
+                "importance": 11.315050419420004
+            },
+            {
+                "feature": "535",
+                "importance": 8.470376396551728
+            },
+            {
+                "feature": "585",
+                "importance": 7.972823306918144
+            },
+            {
+                "feature": "900",
+                "importance": 6.916388126090169
+            },
+            {
+                "feature": "485",
+                "importance": 6.611407058313489
+            },
+            {
+                "feature": "810",
+                "importance": 4.985399397090077
+            },
+            {
+                "feature": "760",
+                "importance": 3.3932194355875254
+            },
+            {
+                "feature": "730",
+                "importance": 3.090724056586623
+            },
+            {
+                "feature": "705",
+                "importance": 1.919314980506897
+            },
+            {
+                "feature": "940",
+                "importance": 0.44625807646661997
+            }
+        ],
+        "nitro": [
+            {
+                "feature": "645",
+                "importance": 0.8522217795607503
+            },
+            {
+                "feature": "410",
+                "importance": 0.5584033898305734
+            },
+            {
+                "feature": "860",
+                "importance": 0.36777739778062823
+            },
+            {
+                "feature": "760",
+                "importance": 0.2641620860636067
+            },
+            {
+                "feature": "680",
+                "importance": 0.15896474668170413
+            },
+            {
+                "feature": "810",
+                "importance": 0.14782616550292005
+            },
+            {
+                "feature": "610",
+                "importance": 0.09762680203266427
+            },
+            {
+                "feature": "460",
+                "importance": 0.09695186240037401
+            },
+            {
+                "feature": "510",
+                "importance": 0.0869651057714691
+            },
+            {
+                "feature": "560",
+                "importance": 0.08417358208498626
+            },
+            {
+                "feature": "435",
+                "importance": 0.0411825835651598
+            },
+            {
+                "feature": "485",
+                "importance": 0.02914795476567633
+            },
+            {
+                "feature": "585",
+                "importance": 0.02835935702023562
+            },
+            {
+                "feature": "535",
+                "importance": 0.013382855254235437
+            },
+            {
+                "feature": "900",
+                "importance": 0.009845638767728815
+            },
+            {
+                "feature": "705",
+                "importance": 0.008245773920634747
+            },
+            {
+                "feature": "730",
+                "importance": 0.004225598494485894
+            }
+        ],
+        "phosphorus": [
+            {
+                "feature": "645",
+                "importance": 1.5972699242663566
+            },
+            {
+                "feature": "410",
+                "importance": 1.0117939908313929
+            },
+            {
+                "feature": "860",
+                "importance": 0.7163719062482414
+            },
+            {
+                "feature": "760",
+                "importance": 0.512237239661772
+            },
+            {
+                "feature": "680",
+                "importance": 0.25764895182777536
+            },
+            {
+                "feature": "810",
+                "importance": 0.24980761912138405
+            },
+            {
+                "feature": "560",
+                "importance": 0.17736395382780756
+            },
+            {
+                "feature": "610",
+                "importance": 0.15517741350106462
+            },
+            {
+                "feature": "460",
+                "importance": 0.13429557679955906
+            },
+            {
+                "feature": "510",
+                "importance": 0.11816968717903364
+            },
+            {
+                "feature": "435",
+                "importance": 0.07021786259701912
+            },
+            {
+                "feature": "485",
+                "importance": 0.05435916885085135
+            },
+            {
+                "feature": "585",
+                "importance": 0.049575849549910345
+            },
+            {
+                "feature": "535",
+                "importance": 0.02502433266317894
+            },
+            {
+                "feature": "900",
+                "importance": 0.024364229015645833
+            },
+            {
+                "feature": "705",
+                "importance": 0.01718367018520439
+            },
+            {
+                "feature": "730",
+                "importance": 0.006510546214485657
+            }
+        ],
+        "potassium": [
+            {
+                "feature": "645",
+                "importance": 10.272609666561038
+            },
+            {
+                "feature": "410",
+                "importance": 6.166767979779252
+            },
+            {
+                "feature": "860",
+                "importance": 4.45672810060023
+            },
+            {
+                "feature": "760",
+                "importance": 2.700311109150789
+            },
+            {
+                "feature": "680",
+                "importance": 1.8384828120288148
+            },
+            {
+                "feature": "510",
+                "importance": 1.5546650978903926
+            },
+            {
+                "feature": "810",
+                "importance": 1.3562909284555644
+            },
+            {
+                "feature": "560",
+                "importance": 1.0999460446082594
+            },
+            {
+                "feature": "610",
+                "importance": 1.013942713576398
+            },
+            {
+                "feature": "460",
+                "importance": 0.8103046091482611
+            },
+            {
+                "feature": "585",
+                "importance": 0.3786571198525053
+            },
+            {
+                "feature": "435",
+                "importance": 0.3457906767944223
+            },
+            {
+                "feature": "485",
+                "importance": 0.34410105842835037
+            },
+            {
+                "feature": "535",
+                "importance": 0.23078615001941216
+            },
+            {
+                "feature": "900",
+                "importance": 0.12269218533037929
+            },
+            {
+                "feature": "705",
+                "importance": 0.11642056140226487
+            },
+            {
+                "feature": "730",
+                "importance": 0.04265633846807759
+            }
+        ],
+        "capacityMoist": [
+            {
+                "feature": "510",
+                "importance": 2206925.0806655884
+            },
+            {
+                "feature": "435",
+                "importance": 1774216.3952789307
+            },
+            {
+                "feature": "810",
+                "importance": 1349749.12059021
+            },
+            {
+                "feature": "410",
+                "importance": 1184378.8686294556
+            },
+            {
+                "feature": "610",
+                "importance": 531908.6060295105
+            },
+            {
+                "feature": "645",
+                "importance": 451413.1475601196
+            },
+            {
+                "feature": "560",
+                "importance": 298722.20066070557
+            },
+            {
+                "feature": "900",
+                "importance": 257429.21141052246
+            },
+            {
+                "feature": "535",
+                "importance": 211752.68431854248
+            },
+            {
+                "feature": "680",
+                "importance": 203921.07274627686
+            },
+            {
+                "feature": "460",
+                "importance": 177495.99349212646
+            },
+            {
+                "feature": "485",
+                "importance": 176042.3134918213
+            },
+            {
+                "feature": "860",
+                "importance": 124940.35429382324
+            },
+            {
+                "feature": "760",
+                "importance": 64073.498096466064
+            },
+            {
+                "feature": "730",
+                "importance": 61661.22985076904
+            },
+            {
+                "feature": "585",
+                "importance": 31304.498458862305
+            },
+            {
+                "feature": "705",
+                "importance": 12362.959197998047
+            },
+            {
+                "feature": "940",
+                "importance": 2198.602996826172
+            }
+        ],
+        "temperature": [
+            {
+                "feature": "900",
+                "importance": 1330.897168841213
+            },
+            {
+                "feature": "810",
+                "importance": 918.5423902571201
+            },
+            {
+                "feature": "410",
+                "importance": 727.3224767821375
+            },
+            {
+                "feature": "510",
+                "importance": 688.3728734739125
+            },
+            {
+                "feature": "645",
+                "importance": 528.5496472157538
+            },
+            {
+                "feature": "460",
+                "importance": 525.0482078213245
+            },
+            {
+                "feature": "860",
+                "importance": 473.43360461480916
+            },
+            {
+                "feature": "435",
+                "importance": 216.9843579903245
+            },
+            {
+                "feature": "560",
+                "importance": 141.63822054490447
+            },
+            {
+                "feature": "585",
+                "importance": 140.19755216687918
+            },
+            {
+                "feature": "680",
+                "importance": 116.65488847345114
+            },
+            {
+                "feature": "610",
+                "importance": 90.35875864699483
+            },
+            {
+                "feature": "760",
+                "importance": 57.47380755841732
+            },
+            {
+                "feature": "705",
+                "importance": 49.97060653939843
+            },
+            {
+                "feature": "485",
+                "importance": 19.926400914322585
+            },
+            {
+                "feature": "535",
+                "importance": 18.79195175971836
+            },
+            {
+                "feature": "730",
+                "importance": 9.937744272989221
+            },
+            {
+                "feature": "940",
+                "importance": 0.03873249888420105
+            }
+        ],
+        "moisture": [
+            {
+                "feature": "460",
+                "importance": 14483.394774109125
+            },
+            {
+                "feature": "645",
+                "importance": 11755.988056272268
+            },
+            {
+                "feature": "680",
+                "importance": 6010.659815751016
+            },
+            {
+                "feature": "860",
+                "importance": 5595.175609521568
+            },
+            {
+                "feature": "760",
+                "importance": 4429.386614859104
+            },
+            {
+                "feature": "510",
+                "importance": 4199.229146271944
+            },
+            {
+                "feature": "410",
+                "importance": 2770.15136683546
+            },
+            {
+                "feature": "610",
+                "importance": 2217.034941136837
+            },
+            {
+                "feature": "435",
+                "importance": 1985.1605843305588
+            },
+            {
+                "feature": "585",
+                "importance": 1556.9241057485342
+            },
+            {
+                "feature": "560",
+                "importance": 1541.3032033890486
+            },
+            {
+                "feature": "535",
+                "importance": 1144.3205174803734
+            },
+            {
+                "feature": "810",
+                "importance": 1006.185176640749
+            },
+            {
+                "feature": "705",
+                "importance": 579.1143903136253
+            },
+            {
+                "feature": "485",
+                "importance": 465.4084158241749
+            },
+            {
+                "feature": "900",
+                "importance": 255.62656834721565
+            },
+            {
+                "feature": "730",
+                "importance": 111.49524518847466
+            }
+        ],
+        "electricalConductivity": [
+            {
+                "feature": "645",
+                "importance": 295.4541921229102
+            },
+            {
+                "feature": "410",
+                "importance": 205.02475352404872
+            },
+            {
+                "feature": "860",
+                "importance": 84.19903066614643
+            },
+            {
+                "feature": "760",
+                "importance": 59.212181167909876
+            },
+            {
+                "feature": "460",
+                "importance": 47.975682683405466
+            },
+            {
+                "feature": "680",
+                "importance": 44.73586129983596
+            },
+            {
+                "feature": "510",
+                "importance": 38.47709606261924
+            },
+            {
+                "feature": "810",
+                "importance": 31.138514337595552
+            },
+            {
+                "feature": "560",
+                "importance": 30.071825289633125
+            },
+            {
+                "feature": "610",
+                "importance": 17.401451907120645
+            },
+            {
+                "feature": "435",
+                "importance": 15.540807410958223
+            },
+            {
+                "feature": "485",
+                "importance": 10.263730227365158
+            },
+            {
+                "feature": "585",
+                "importance": 9.843498083297163
+            },
+            {
+                "feature": "900",
+                "importance": 5.071030542021617
+            },
+            {
+                "feature": "535",
+                "importance": 4.765864236615016
+            },
+            {
+                "feature": "705",
+                "importance": 0.8109630338149145
+            },
+            {
+                "feature": "730",
+                "importance": 0.21683925983961672
+            }
+        ]
+    }
+}
