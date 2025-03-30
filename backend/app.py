@@ -1,256 +1,243 @@
+# -*- coding: utf-8 -*-
+"""
+app.py: Flask application for Soil Spectrometer Analysis.
+Provides API endpoints for prediction, metrics, and feature rankings.
+"""
 import os
-import json
-import joblib
-import pandas as pd
-import numpy as np
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import numpy as np
+import mymodel_utils # Import the utility functions
 
-# --- Configuration ---
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-MODEL_DIR = os.path.join(BASE_DIR, "trained_soil_models_reduced")
-DATA_DIR = os.path.join(BASE_DIR, "backend_data")
-METRICS_FILE = os.path.join(DATA_DIR, "metrics.json")
-IMPORTANCE_FILE = os.path.join(DATA_DIR, "feature_importance.json")
-CATEGORIES_FILE = os.path.join(DATA_DIR, "soil_categories.json")
-TOP_FEATURES_FILE = os.path.join(DATA_DIR, "top_features_used.json") # Crucial
-
-EXPECTED_TARGET_KEYS = [
-    'pH', 'nitro', 'phosphorus', 'potassium', 'capacityMoist',
-    'temperature', 'moisture', 'electricalConductivity'
-]
-EXPECTED_WATER_LEVEL_KEYS = ['0ml', '25ml', '50ml']
-N_TOP_FEATURES = 4 # Must match training!
-
-# --- Flask App Initialization ---
 app = Flask(__name__)
-CORS(app)
+# Allow requests from your frontend domain in production
+# For development, allow from localhost:3000 (adjust port if needed)
+CORS(app, resources={r"/api/*": {"origins": ["http://localhost:3000", "http://localhost:5173"]}}) # Replace with your frontend URL
 
-# --- Load Data at Startup ---
-def load_json_data(filepath):
-    if not os.path.exists(filepath):
-        print(f"Error: Data file not found at {filepath}")
-        return None
-    try:
-        with open(filepath, 'r') as f:
-            return json.load(f)
-    except Exception as e:
-        print(f"Error loading or parsing JSON from {filepath}: {e}")
-        return None
+# --- Application Initialization ---
+# Run initialization when the app starts.
+# In production with multiple workers (Gunicorn), this might run per worker.
+# The lock inside initialize_application handles concurrency.
+# For Vercel, this runs when the serverless function initializes.
+initialization_successful = mymodel_utils.initialize_application()
 
-print("--- Loading backend data ---")
-metrics_data = load_json_data(METRICS_FILE)
-importance_data = load_json_data(IMPORTANCE_FILE)
-soil_categories = load_json_data(CATEGORIES_FILE)
-top_features_data = load_json_data(TOP_FEATURES_FILE)
+if not initialization_successful:
+    print("WARNING: Application failed to initialize properly. Endpoints might not work.")
 
-if not all([metrics_data, importance_data, soil_categories, top_features_data]):
-    print("CRITICAL Error: One or more essential data files failed to load. Check paths in backend_data/.")
-else:
-    print("Backend data loaded successfully.")
-    if soil_categories: print(f"Loaded {len(soil_categories)} soil categories.")
-    if not top_features_data: print("Warning: Top features data not loaded.")
+# --- API Routes ---
 
+@app.route('/api/health', methods=['GET'])
+def health_check():
+    """Basic health check endpoint."""
+    initialized = mymodel_utils.get_status()
+    if initialized:
+        return jsonify({"status": "OK", "message": "Application initialized"}), 200
+    else:
+        return jsonify({"status": "Error", "message": "Application failed to initialize"}), 500
 
-# --- Helper Functions ---
-def get_model_filename(target_key, wl_key):
-    """Constructs the expected model filename."""
-    safe_target_name = "".join(c if c.isalnum() else "_" for c in target_key)
-    wl_number_str = wl_key.replace('ml', '')
-    filename = f"model_reduced_{safe_target_name}_WL{wl_number_str}ml_top{N_TOP_FEATURES}.joblib"
-    return os.path.join(MODEL_DIR, filename)
-
-def format_value(value, key):
-     """Formats prediction values for JSON output."""
-     if value is None or pd.isna(value): return None
-     try:
-         float_value = float(value)
-         if key in ['pH', 'electricalConductivity', 'temperature', 'moisture', 'capacityMoist']: return round(float_value, 1)
-         elif key in ['nitro', 'phosphorus', 'potassium']: return round(float_value, 0)
-         else: return round(float_value, 2)
-     except: return None
-
-
-# --- API Endpoints ---
 @app.route('/api/analyze', methods=['POST'])
 def analyze_soil():
-    print("\nReceived /api/analyze request")
-    if not request.is_json: return jsonify({"error": "Request must be JSON"}), 400
-    data = request.get_json()
-    print(f"Received data: {json.dumps(data)}") # Log incoming data
-
-    # --- Validate Input ---
-    water_level_raw = data.get('waterLevel')
-    wavelengths_input_user = data.get('wavelengths') # User provided wavelengths
-
-    if water_level_raw is None or wavelengths_input_user is None:
-        return jsonify({"error": "Missing 'waterLevel' or 'wavelengths'"}), 400
-    if not isinstance(wavelengths_input_user, dict):
-         return jsonify({"error": "'wavelengths' must be a dictionary"}), 400
+    """
+    Endpoint to receive spectral data and water level, return predictions.
+    Expects JSON: { "waterLevel": int, "wavelengths": {"410": float, "535": float, ...} }
+    """
+    if not mymodel_utils.get_status():
+        return jsonify({"error": "Service not ready, initialization failed."}), 503
 
     try:
-        water_level = float(water_level_raw)
-        wl_key = f"{int(water_level)}ml"
-        if wl_key not in EXPECTED_WATER_LEVEL_KEYS:
-             return jsonify({"error": f"Water level {water_level}ml not supported (Use 0, 25, 50)."}), 400
-    except ValueError:
-         return jsonify({"error": "'waterLevel' must be a valid number"}), 400
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "Invalid request: No JSON body found."}), 400
 
-    # Check essential data
-    if not soil_categories or not top_features_data or not metrics_data:
-         print("Error: Essential data missing.")
-         return jsonify({"error": "Server configuration error"}), 500
+        water_level = data.get('waterLevel')
+        wavelength_data = data.get('wavelengths')
 
-    assumed_soil_code = soil_categories[0]
-    print(f"Using assumed Soil_Code: '{assumed_soil_code}'")
-
-    # --- Perform Predictions ---
-    predictions = {}
-    print(f"Predicting for Water Level Key: {wl_key}")
-
-    # Log the wavelengths provided by the user ONCE per request
-    user_provided_wavelengths = list(wavelengths_input_user.keys())
-    print(f"User provided wavelengths: {user_provided_wavelengths}")
-
-    for target_key in EXPECTED_TARGET_KEYS:
-        print(f"  Processing target: {target_key}")
-        target_pred = None
-        model_loaded = False # Flag to track if model file exists and is loaded
-
-        # 1. Get required spectral features for THIS model
-        required_spectral_features = []
+        # --- Input Validation ---
+        if water_level is None or not isinstance(water_level, (int, float)):
+             return jsonify({"error": "Invalid request: 'waterLevel' missing or not a number."}), 400
+        # Convert to int if possible (model expects specific levels)
         try:
-            required_spectral_features = top_features_data.get(wl_key, {}).get(target_key, [])
-            print(f"    Model requires spectral features: {required_spectral_features or 'None listed'}") # Log required features
+             water_level = int(water_level)
+             if water_level not in mymodel_utils.WATER_LEVELS_TO_PROCESS:
+                  return jsonify({"error": f"Invalid request: 'waterLevel' must be one of {mymodel_utils.WATER_LEVELS_TO_PROCESS}."}), 400
+        except ValueError:
+             return jsonify({"error": "Invalid request: 'waterLevel' could not be converted to an integer."}), 400
 
-            if not required_spectral_features:
-                 # Check for constant zero case (e.g., NPK at WL 0)
-                 mae_status = metrics_data.get('MAE',{}).get(wl_key,{}).get(target_key)
-                 if target_key in ['nitro', 'phosphorus', 'potassium'] and wl_key == '0ml' and mae_status == 0.0:
-                      print("    Applying 0 prediction (Constant_Zero_Train).")
-                      target_pred = 0.0
-                 else:
-                      print(f"    Warning: No spectral features defined for {target_key}@{wl_key} and not constant zero. Prediction = None.")
-                 predictions[target_key] = format_value(target_pred, target_key)
-                 continue # Skip to next target
 
-        except Exception as e:
-             print(f"    Error retrieving required features: {e}")
-             predictions[target_key] = format_value(None, target_key)
-             continue
+        if not wavelength_data or not isinstance(wavelength_data, dict):
+            return jsonify({"error": "Invalid request: 'wavelengths' missing or not a dictionary."}), 400
 
-        # 2. Check if USER PROVIDED all required spectral features
-        missing_user_inputs = [f for f in required_spectral_features if f not in wavelengths_input_user]
+        # Validate wavelength keys and values
+        valid_spectral_keys = set(mymodel_utils.SPECTRAL_COLS)
+        provided_keys = set(wavelength_data.keys())
+        invalid_keys = provided_keys - valid_spectral_keys
+        if invalid_keys:
+            return jsonify({"error": f"Invalid spectral keys provided: {list(invalid_keys)}. Valid keys are: {mymodel_utils.SPECTRAL_COLS}"}), 400
 
-        if missing_user_inputs:
-            print(f"    Cannot predict {target_key}: User input MISSING required wavelength(s): {missing_user_inputs}")
-            target_pred = None
+        # Check number of inputs (frontend should also validate this)
+        num_provided = len(provided_keys)
+        MIN_INPUTS = 2 # Model requirement
+        MAX_INPUTS = len(mymodel_utils.SPECTRAL_COLS)
+        if not (MIN_INPUTS <= num_provided <= MAX_INPUTS):
+            return jsonify({"error": f"Must provide between {MIN_INPUTS} and {MAX_INPUTS} spectral values. Provided: {num_provided}"}), 400
+
+        # Convert values to float and check for non-numeric inputs
+        processed_wavelengths = {}
+        for key, value in wavelength_data.items():
+            try:
+                processed_wavelengths[key] = float(value)
+            except (ValueError, TypeError):
+                return jsonify({"error": f"Invalid numeric value for wavelength '{key}': {value}"}), 400
+
+        # --- Run Prediction ---
+        status_info, predictions = mymodel_utils.run_prediction(processed_wavelengths, water_level)
+
+        # --- Format Response ---
+        # Combine status info with actual predictions
+        response_data = {**status_info, **predictions}
+
+        # Map internal target names to frontend keys if they differ
+        # Example mapping (adjust based on your frontend's `METRIC_PARAM_KEYS`)
+        frontend_key_map = {
+            'Ph': 'pH',
+            'Nitro': 'nitro',
+            'Posh Nitro': 'phosphorus', # Assuming 'Posh Nitro' means Phosphorus
+            'Pota Nitro': 'potassium', # Assuming 'Pota Nitro' means Potassium
+            'Capacitity Moist': 'capacityMoist',
+            'Temp': 'temperature',
+            'Moist': 'moisture',
+            'EC': 'electricalConductivity'
+        }
+
+        formatted_response = {
+             'Prediction_Status': response_data.get('Prediction_Status', 'Unknown Error'),
+             'Input_Water_Level': response_data.get('Input_Water_Level', water_level),
+             'Provided_Features': response_data.get('Provided_Features', list(processed_wavelengths.keys())),
+             'Imputed_Features': response_data.get('Imputed_Features', [])
+        }
+        for model_key, frontend_key in frontend_key_map.items():
+             pred_value = response_data.get(model_key)
+             # Return null for NaN or None (JSON standard)
+             formatted_response[frontend_key] = None if (pred_value is None or (isinstance(pred_value, float) and np.isnan(pred_value))) else pred_value
+
+
+        if "Error" in formatted_response['Prediction_Status'] or "Failed" in formatted_response['Prediction_Status']:
+             # Return a more indicative HTTP status code for errors during prediction
+             return jsonify(formatted_response), 500
+        elif "Partial Success" in formatted_response['Prediction_Status']:
+             # Could return 207 Multi-Status, but 200 is also acceptable
+              return jsonify(formatted_response), 200
         else:
-            # 3. Prepare input dict & DataFrame for THIS model
-            print(f"    User provided required wavelengths: {required_spectral_features}")
-            model_input_dict = {'Soil_Code': assumed_soil_code}
-            valid_input = True
-            for feature in required_spectral_features:
-                try:
-                    value = wavelengths_input_user[feature]
-                    if value is None or str(value).strip() == '':
-                         raise ValueError("Input value is empty")
-                    model_input_dict[feature] = float(value)
-                except (ValueError, TypeError, KeyError) as e:
-                     print(f"    Error: Invalid/missing input for required feature '{feature}': {e}. Cannot predict {target_key}.")
-                     target_pred = None
-                     valid_input = False
-                     break
+             return jsonify(formatted_response), 200
 
-            if valid_input:
-                try:
-                    model_features_list = ['Soil_Code'] + required_spectral_features
-                    model_input_df = pd.DataFrame([model_input_dict], columns=model_features_list)
-                    model_input_df['Soil_Code'] = pd.Categorical(model_input_df['Soil_Code'], categories=soil_categories, ordered=False)
-
-                    if model_input_df['Soil_Code'].isnull().any():
-                        print("    Error: NaN created in Soil_Code.")
-                        target_pred = None
-                    else:
-                        # 4. Load the specific model file
-                        model_filename = get_model_filename(target_key, wl_key)
-                        print(f"    Attempting to load model: {model_filename}")
-                        if os.path.exists(model_filename):
-                            try:
-                                model = joblib.load(model_filename)
-                                model_loaded = True # Mark as loaded successfully
-                                # 5. Predict
-                                print(f"    Predicting using features: {model_input_df.columns.tolist()}")
-                                print(f"    Input data for prediction:\n{model_input_df.to_string()}")
-                                prediction_array = model.predict(model_input_df)
-                                target_pred = prediction_array[0]
-                                print(f"    Raw Prediction: {target_pred}")
-                            except Exception as e:
-                                print(f"    Error loading/predicting with model {model_filename}: {e}")
-                                target_pred = None
-                        else:
-                            print(f"    Error: Model file does not exist: {model_filename}")
-                            target_pred = None
-                except Exception as e:
-                    print(f"    Error creating DataFrame or applying category: {e}")
-                    target_pred = None
-
-        # 6. Store formatted prediction
-        # Add extra check: If model didn't load or prediction failed, ensure None
-        if valid_input and not model_loaded and target_pred is not None:
-             print(f"    Resetting prediction to None because model didn't load/predict correctly.") # Safety check
-             target_pred = None
-
-        predictions[target_key] = format_value(target_pred, target_key)
-        print(f"    Prediction stored for {target_key}: {predictions[target_key]}")
+    except Exception as e:
+        print(f"ERROR in /api/analyze: {e}")
+        # Log the full traceback for debugging
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": "An unexpected server error occurred."}), 500
 
 
-    print(f"Final predictions payload: {json.dumps(predictions)}")
-    return jsonify(predictions)
-
-
-# --- Other Endpoints (Metrics, Top Wavelengths - No changes needed) ---
 @app.route('/api/metrics', methods=['GET'])
 def get_metrics():
-    if metrics_data: return jsonify(metrics_data)
-    else: return jsonify({"error": "Metrics data not available"}), 503
+    """Returns the pre-calculated model performance metrics."""
+    if not mymodel_utils.get_status():
+        return jsonify({"error": "Service not ready, initialization failed."}), 503
+
+    metrics = mymodel_utils.get_performance_metrics()
+    if "error" in metrics:
+        return jsonify(metrics), 500 # If metrics loading failed during init
+
+    # No reformatting needed if mymodel_utils saves in the correct structure
+    return jsonify(metrics), 200
+
 
 @app.route('/api/top-wavelengths', methods=['GET'])
 def get_top_wavelengths():
-    attribute_key = request.args.get('attribute')
+    """
+    Returns the top N ranked wavelengths for a given attribute.
+    Query Params: attribute (e.g., 'pH', 'nitro'), count (e.g., 5)
+    """
+    if not mymodel_utils.get_status():
+        return jsonify({"error": "Service not ready, initialization failed."}), 503
+
+    attribute_key_frontend = request.args.get('attribute') # e.g., 'pH', 'nitro'
     count_str = request.args.get('count')
-    # Input Validation
-    if not attribute_key or attribute_key not in EXPECTED_TARGET_KEYS: return jsonify({"error": "Missing/invalid 'attribute'"}), 400
-    try: count = int(count_str); assert count > 0
-    except: return jsonify({"error": "'count' must be positive integer"}), 400
-    if not importance_data: return jsonify({"error": "Importance data unavailable"}), 503
 
-    # Retrieve and Rank
-    representative_wl_key = '25ml'
-    if representative_wl_key not in importance_data:
-         available_wls = list(importance_data.keys())
-         if not available_wls: return jsonify({"error": "No importance data found"}), 404
-         representative_wl_key = available_wls[0]
-         print(f"Warn: Using {representative_wl_key} for importance.")
+    if not attribute_key_frontend:
+        return jsonify({"error": "Missing 'attribute' query parameter."}), 400
+    if not count_str:
+        return jsonify({"error": "Missing 'count' query parameter."}), 400
 
-    target_importance_list = importance_data.get(representative_wl_key, {}).get(attribute_key)
-    if not isinstance(target_importance_list, list): return jsonify({"error": f"No/invalid importance data for '{attribute_key}'"}), 404
+    try:
+        count = int(count_str)
+        if count < 1: raise ValueError("Count must be positive.")
+    except ValueError:
+        return jsonify({"error": "'count' must be a positive integer."}), 400
 
-    # Sort valid importance scores
-    sorted_importances = sorted(
-        [item for item in target_importance_list if isinstance(item.get('importance'), (int, float)) and not pd.isna(item['importance'])],
-        key=lambda x: x['importance'], reverse=True
-    )
-    # Prepare output
-    ranked_wavelengths = [{
-        "rank": i + 1, "wavelength": item['feature'], "importanceScore": round(item['importance'], 4)
-    } for i, item in enumerate(sorted_importances[:count])]
-    return jsonify(ranked_wavelengths)
+    # --- Map Frontend Attribute Key to Model Target Column Name ---
+    # Inverse of the map used in /analyze
+    model_target_map = {
+        'pH': 'Ph',
+        'nitro': 'Nitro',
+        'phosphorus': 'Posh Nitro',
+        'potassium': 'Pota Nitro',
+        'capacityMoist': 'Capacitity Moist',
+        'temperature': 'Temp',
+        'moisture': 'Moist',
+        'electricalConductivity': 'EC'
+    }
+    model_target_col = model_target_map.get(attribute_key_frontend)
 
-# --- Root Route ---
-@app.route('/')
-def index(): return "Soil Spectrometer Backend API is running."
+    if not model_target_col:
+        valid_frontend_keys = list(model_target_map.keys())
+        return jsonify({"error": f"Invalid 'attribute' provided: {attribute_key_frontend}. Valid attributes: {valid_frontend_keys}"}), 400
 
-# --- Run App ---
+
+    rankings = mymodel_utils.get_feature_rankings()
+    if "error" in rankings:
+        return jsonify(rankings), 500 # If ranking loading failed
+
+    target_rankings = rankings.get(model_target_col)
+
+    if target_rankings is None:
+         # This might happen if ranking failed for this specific target during init
+         return jsonify({"error": f"Ranking data not available for attribute '{attribute_key_frontend}' (target: {model_target_col})."}), 404
+    elif not isinstance(target_rankings, list):
+         # Data integrity check
+         print(f"Warning: Unexpected format for rankings of {model_target_col}. Expected list, got {type(target_rankings)}")
+         return jsonify({"error": f"Internal server error retrieving rankings for '{attribute_key_frontend}'."}), 500
+
+    # Slice the rankings to get the top N
+    top_rankings = target_rankings[:count]
+
+    return jsonify(top_rankings), 200
+
+@app.route('/api/metrics', methods=['GET'])
+def get_metrics():
+    """Returns the pre-calculated model performance metrics."""
+    if not mymodel_utils.get_status():
+        return jsonify({"error": "Service not ready, initialization failed."}), 503
+
+    metrics = mymodel_utils.get_performance_metrics()
+    if "error" in metrics:
+        return jsonify(metrics), 500
+
+    # --- Add Debug Print ---
+    print("--- Serving /api/metrics ---")
+    print(f"Type of metrics object: {type(metrics)}")
+    # Log a sample to see if it's correct before jsonify
+    try:
+         print(f"Sample metric (R2, 0ml, Ph): {metrics.get('R2', {}).get('0ml', {}).get('Ph')}")
+    except Exception as e:
+         print(f"Error accessing sample metric: {e}")
+    print("--- End Serving /api/metrics ---")
+    # --- End Debug Print ---
+
+    return jsonify(metrics), 200
+
+# --- Main Execution ---
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    # Use a production-ready server like Gunicorn or Waitress instead of app.run()
+    # For local development:
+    app.run(debug=True, port=5000) # Set debug=False in production
