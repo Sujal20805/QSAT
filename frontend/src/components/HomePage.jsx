@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import { v4 as uuidv4 } from 'uuid';
 
 // --- Constants ---
-const API_BASE_URL = 'http://localhost:5000/api'; // Backend URL
+const API_BASE_URL = 'http://qsat-api.vercel.app/api'; // Backend URL
 
 const ALL_WAVELENGTHS = [
   '410', '435', '460', '485', '510', '535', '560', '585',
