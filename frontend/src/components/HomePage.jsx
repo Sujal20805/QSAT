@@ -43,6 +43,21 @@ const METRIC_PARAM_KEYS_BACKEND = {
 
 const SIMULATED_WATER_LEVELS_KEYS = ['0ml', '25ml', '50ml'];
 
+// --- Static Correct Wavelength Ranking Data ---
+// Based on the provided table, using FRONTEND keys for easier lookup
+const CORRECT_WAVELENGTH_RANKS = {
+    // Frontend Key: { Wavelength: Rank }
+    pH: { '410': 1, '435': 2, '460': 7, '485': 14, '510': 4, '535': 12, '560': 6, '585': 5, '610': 8, '645': 3, '680': 9, '705': 17, '730': 15, '760': 13, '810': 16, '860': 10, '900': 11, '940': 18 },
+    nitro: { '410': 1, '435': 3, '460': 4, '485': 16, '510': 6, '535': 13, '560': 5, '585': 8, '610': 12, '645': 2, '680': 7, '705': 14, '730': 17, '760': 15, '810': 10, '860': 9, '900': 11, '940': 18 },
+    phosphorus: { '410': 2, '435': 9, '460': 5, '485': 16, '510': 3, '535': 13, '560': 4, '585': 14, '610': 12, '645': 1, '680': 8, '705': 15, '730': 17, '760': 10, '810': 11, '860': 7, '900': 6, '940': 18 }, // Mapped from Posh Nitro
+    potassium: { '410': 2, '435': 7, '460': 4, '485': 16, '510': 3, '535': 10, '560': 5, '585': 8, '610': 12, '645': 1, '680': 6, '705': 17, '730': 15, '760': 14, '810': 13, '860': 11, '900': 9, '940': 18 }, // Mapped from Pota Nitro
+    capacityMoist: { '410': 2, '435': 9, '460': 1, '485': 15, '510': 7, '535': 11, '560': 10, '585': 12, '610': 14, '645': 8, '680': 6, '705': 17, '730': 16, '760': 13, '810': 5, '860': 3, '900': 4, '940': 18 }, // Mapped from Capacitity Moist
+    temperature: { '410': 6, '435': 2, '460': 7, '485': 16, '510': 4, '535': 9, '560': 12, '585': 13, '610': 11, '645': 3, '680': 5, '705': 15, '730': 17, '760': 14, '810': 8, '860': 10, '900': 1, '940': 18 }, // Mapped from Temp
+    moisture: { '410': 2, '435': 8, '460': 5, '485': 16, '510': 3, '535': 14, '560': 10, '585': 13, '610': 9, '645': 1, '680': 6, '705': 15, '730': 17, '760': 12, '810': 11, '860': 7, '900': 4, '940': 18 }, // Mapped from Moist
+    electricalConductivity: { '410': 2, '435': 11, '460': 3, '485': 16, '510': 4, '535': 9, '560': 5, '585': 10, '610': 7, '645': 1, '680': 6, '705': 15, '730': 17, '760': 12, '810': 11, '860': 7, '900': 4, '940': 18 } // Mapped from EC
+};
+
+
 // --- Gemini Chat Constants ---
 // Removed INITIAL_GEMINI_PROMPT_PREFIX as context will be added dynamically
 
@@ -86,9 +101,9 @@ function HomePage() {
   const [isLoadingMetrics, setIsLoadingMetrics] = useState(true);
   const [topXCount, setTopXCount] = useState(MIN_TOP_X);
   const [selectedTopXAttribute, setSelectedTopXAttribute] = useState(METRIC_PARAM_KEYS_FRONTEND['pH']);
-  const [rankedWavelengthsData, setRankedWavelengthsData] = useState([]);
-  const [topXError, setTopXError] = useState(null);
-  const [isLoadingTopX, setIsLoadingTopX] = useState(false);
+  const [rankedWavelengthsData, setRankedWavelengthsData] = useState([]); // State to hold the processed ranking data for display
+  const [topXError, setTopXError] = useState(null); // Error state specifically for the ranking table
+  const [isLoadingTopX, setIsLoadingTopX] = useState(false); // Loading state specifically for the ranking table
   const [currentView, setCurrentView] = useState('form');
   const [selectedMetricType, setSelectedMetricType] = useState('MAE');
   // --- Gemini Chat State ---
@@ -186,34 +201,52 @@ function HomePage() {
     }
    }, [numWavelengthInputs, dynamicWavelengthData.length]);
 
-  // Fetch Top Wavelengths (No changes needed)
-  const fetchTopWavelengths = useCallback(async () => {
-    if (!selectedTopXAttribute) return;
-    setIsLoadingTopX(true);
-    setTopXError(null);
-    const url = `${API_BASE_URL}/top-wavelengths?attribute=${selectedTopXAttribute}&count=${topXCount}`;
-    console.log("Fetching Top Wavelengths URL:", url);
+  // *** MODIFIED: Effect to process and set static Top Wavelengths ***
+  useEffect(() => {
+    if (!selectedTopXAttribute) return; // Don't run if no attribute is selected
+
+    setIsLoadingTopX(true); // Indicate loading state
+    setTopXError(null); // Clear previous errors
+    setRankedWavelengthsData([]); // Clear previous data
+
+    // Use a try...finally block to ensure loading state is reset
     try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData?.error || `HTTP error ${response.status}`);
-      }
-      const data = await response.json();
-      console.log("Fetched Top Wavelengths:", data);
-      setRankedWavelengthsData(data || []);
+        // Find the ranking data for the selected attribute in our static constant
+        const ranksForAttribute = CORRECT_WAVELENGTH_RANKS[selectedTopXAttribute];
+
+        if (!ranksForAttribute) {
+            // This should not happen if selectedTopXAttribute comes from METRIC_PARAM_KEYS_FRONTEND
+            console.error(`No ranking data found for attribute key: ${selectedTopXAttribute}`);
+            throw new Error(`Ranking data unavailable for the selected attribute.`);
+        }
+
+        // Convert the { wavelength: rank } object into an array of { wavelength, rank, importanceScore } objects
+        // The table expects 'importanceScore', but we only have rank, so set score to null.
+        const allRankedItems = Object.entries(ranksForAttribute).map(([wavelength, rank]) => ({
+            wavelength: wavelength,
+            rank: rank,
+            importanceScore: null // Set importanceScore to null as we only have ranks
+        }));
+
+        // Sort the items by rank in ascending order (rank 1 first)
+        allRankedItems.sort((a, b) => a.rank - b.rank);
+
+        // Get the top 'topXCount' items based on the user's selection
+        const topXItems = allRankedItems.slice(0, topXCount);
+
+        // Update the state with the processed and filtered ranking data
+        setRankedWavelengthsData(topXItems);
+
     } catch (err) {
-      console.error("Failed top wavelengths:", err);
-      setTopXError(`Could not load rankings: ${err.message}.`);
-      setRankedWavelengthsData([]);
+        console.error("Error processing static ranking data:", err);
+        setTopXError(`Could not load rankings: ${err.message}.`); // Set error state
+        setRankedWavelengthsData([]); // Ensure data is empty on error
     } finally {
-      setIsLoadingTopX(false);
+        setIsLoadingTopX(false); // Reset loading state regardless of success or error
     }
+    // This effect depends on the selected attribute and the number of items to show
   }, [selectedTopXAttribute, topXCount]);
 
-  useEffect(() => {
-    fetchTopWavelengths();
-  }, [fetchTopWavelengths]);
 
   // Scroll Chat History to Bottom (No changes needed)
   useEffect(() => {
@@ -386,7 +419,7 @@ function HomePage() {
     // Construct the full prompt including system instructions, data context, and the user request
     const fullInitialPrompt = `${DEFAULT_SYSTEM_PROMPT}\n\n--- Current Soil Analysis Data ---\n${formattedData}\n\n--- User Request ---\n
     Provide initial insights and crop recommendations based *only* on the provided soil data. Disregard climate/region
-    give the recommendation of crops in the form of a list 
+    give the recommendation of crops in the form of a list
     1. crop
     why this crop is suitable for the soil
     2. crop etc....`;
@@ -451,17 +484,20 @@ function HomePage() {
 
   // --- Render Logic ---
 
-  // Metrics View (No changes needed, assuming display units are handled here correctly)
+  // Metrics View (Modified to use static ranking data states: isLoadingTopX, topXError, rankedWavelengthsData)
   const renderMetricsView = () => {
+    // Loading state for the entire metrics view (unchanged)
     if (isLoadingMetrics) return ( <div className="w-full max-w-6xl mx-auto mt-10 mb-20 text-center"><button onClick={handleBackToForm} className="mb-6 px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700">← Back</button><div className="bg-white p-8 rounded-xl shadow-lg animate-pulse"><div className="h-8 bg-gray-200 rounded w-3/4 mx-auto mb-6"></div><div className="h-4 bg-gray-200 rounded w-1/2 mx-auto mb-8"></div><div className="space-y-4"><div className="h-10 bg-gray-200 rounded"></div><div className="h-10 bg-gray-200 rounded"></div><div className="h-10 bg-gray-200 rounded"></div></div></div></div> );
+    // Error state for the entire metrics view (unchanged)
     if (metricsError || !metricsData) return ( <div className="w-full max-w-6xl mx-auto mt-10 mb-20 text-center"><button onClick={handleBackToForm} className="mb-6 px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700">← Back</button><div className="bg-white p-8 rounded-xl shadow-lg border border-red-200"><h1 className="text-2xl font-bold text-red-600 mb-4">Error Loading Metrics</h1><p className="mt-4 text-gray-700">{metricsError || "Metrics data unavailable."}</p></div></div> );
+    // Helper for rank background (unchanged)
     const getRankBgClass = (rank) => { if (rank === 1) return 'bg-yellow-100/60 hover:bg-yellow-200/70'; if (rank === 2) return 'bg-gray-200/60 hover:bg-gray-300/70'; if (rank === 3) return 'bg-orange-100/60 hover:bg-orange-200/70'; return 'bg-white hover:bg-gray-50'; };
      console.log("Rendering Metrics Table. Data:", metricsData);
      console.log("Selected Metric Type:", selectedMetricType);
     return (
         <div className="w-full max-w-6xl mx-auto mt-10 mb-20 space-y-8">
            <button onClick={handleBackToForm} className="mb-2 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">← Back to Analysis</button>
-          {/* Main Metrics Card */}
+          {/* Main Metrics Card (Unchanged) */}
           <div className="bg-white p-6 md:p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
             <h1 className="text-2xl md:text-3xl font-bold mb-6 text-gray-800">Model Performance Metrics</h1>
              <div className="mb-4 max-w-xs"> <label htmlFor="metric-type" className="block text-sm font-medium text-gray-700 mb-1">Select Metric:</label> <select id="metric-type" value={selectedMetricType} onChange={(e) => setSelectedMetricType(e.target.value)} className="block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-sm"> <option value="MAE">MAE (Lower is better)</option> <option value="RMSE">RMSE (Lower is better)</option> <option value="R2">R² Score (Higher is better)</option> </select> </div>
@@ -477,20 +513,40 @@ function HomePage() {
                 </table>
             </div> {/* End Metrics Table */}
           </div> {/* End Main Metrics Card */}
-          {/* Top Wavelengths Card */}
+
+          {/* *** MODIFIED: Top Wavelengths Card *** */}
           <div className="bg-white p-6 md:p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
-             <h2 className="text-xl md:text-2xl font-bold mb-6 text-gray-800">Top Wavelength Importance</h2> <p className="text-sm text-gray-600 mb-6 -mt-4">Most influential wavelengths.</p>
+             <h2 className="text-xl md:text-2xl font-bold mb-6 text-gray-800">Top Wavelength Importance</h2> <p className="text-sm text-gray-600 mb-6 -mt-4">Most influential wavelengths (based on pre-calculated ranks).</p> {/* Updated subtitle */}
+            {/* Controls (Unchanged) */}
             <div className="flex flex-col sm:flex-row gap-4 mb-6 items-end">
                 <div className="flex-1 min-w-[200px]"> <label htmlFor="topx-attribute" className="block text-base font-medium text-gray-700 mb-2">Attribute:</label> <select id="topx-attribute" value={selectedTopXAttribute} onChange={(e) => setSelectedTopXAttribute(e.target.value)} className="block w-full px-4 py-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-base transition duration-150"> {METRIC_PARAMETERS.map(paramDisplayName => ( <option key={METRIC_PARAM_KEYS_FRONTEND[paramDisplayName]} value={METRIC_PARAM_KEYS_FRONTEND[paramDisplayName]}> {paramDisplayName} </option> ))} </select> </div>
                  <div className="w-full sm:w-auto"> <label htmlFor="topx-count" className="block text-base font-medium text-gray-700 mb-2">Show Top:</label> <input id="topx-count" type="number" value={topXCount} onChange={handleTopXCountChange} onBlur={handleTopXCountBlur} min={MIN_TOP_X} max={MAX_TOP_X} required className="block w-full sm:w-28 px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-base transition duration-150" placeholder={`(${MIN_TOP_X}-${MAX_TOP_X})`} /> </div>
             </div>
-             {isLoadingTopX && ( <div className="text-center py-4 text-gray-500 animate-pulse-custom">Loading...</div> )} {topXError && !isLoadingTopX && ( <div className="text-center py-4 text-red-600 bg-red-50 border border-red-200 rounded-md p-3">{topXError}</div> )}
+             {/* Loading indicator specific to this table */}
+             {isLoadingTopX && ( <div className="text-center py-4 text-gray-500 animate-pulse-custom">Loading rankings...</div> )}
+             {/* Error display specific to this table */}
+             {topXError && !isLoadingTopX && ( <div className="text-center py-4 text-red-600 bg-red-50 border border-red-200 rounded-md p-3">{topXError}</div> )}
+             {/* Table Rendering - uses rankedWavelengthsData state */}
              {!isLoadingTopX && !topXError && (
                 <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm max-w-md mx-auto">
                     <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-100"> <tr> <th className="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Rank</th> <th className="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Wavelength</th> <th className="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider" title="Importance">Importance</th> </tr> </thead>
+                        <thead className="bg-gray-100"> <tr> <th className="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Rank</th> <th className="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Wavelength</th> 
+                        {/* <th className="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider" title="Importance Score (N/A)">Importance</th>*/}
+                        </tr> </thead> 
                         <tbody className="bg-white divide-y divide-gray-200">
-                            {rankedWavelengthsData.length > 0 ? ( rankedWavelengthsData.map(item => ( <tr key={item.rank} className={`${getRankBgClass(item.rank)} transition-colors`}> <td className="px-6 py-3 text-sm font-medium text-gray-900 text-center"><span className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold ${item.rank <= 3 ? 'text-black' : 'text-gray-700'}`}>{item.rank}</span></td> <td className="px-6 py-3 text-sm text-gray-800 text-center">{item.wavelength}</td> <td className="px-6 py-3 text-sm text-gray-600 text-center">{item.importanceScore?.toFixed(4) ?? 'N/A'}</td> </tr> )) ) : ( <tr><td colSpan="3" className="text-center py-4 text-gray-500">No ranking data.</td></tr> )}
+                            {/* Use the rankedWavelengthsData state populated by the new useEffect */}
+                            {rankedWavelengthsData.length > 0 ? (
+                              rankedWavelengthsData.map(item => (
+                                <tr key={item.rank} className={`${getRankBgClass(item.rank)} transition-colors`}>
+                                    <td className="px-6 py-3 text-sm font-medium text-gray-900 text-center"><span className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold ${item.rank <= 3 ? 'text-black' : 'text-gray-700'}`}>{item.rank}</span></td>
+                                    <td className="px-6 py-3 text-sm text-gray-800 text-center">{item.wavelength}</td>
+                                    {/* Display N/A for importance score as it's null */}
+                                    {/* <td className="px-6 py-3 text-sm text-gray-600 text-center">{item.importanceScore !== null ? item.importanceScore.toFixed(4) : 'N/A'}</td> */}
+                                </tr>
+                               ))
+                             ) : (
+                                <tr><td colSpan="3" className="text-center py-4 text-gray-500">No ranking data available for this selection.</td></tr>
+                             )}
                         </tbody>
                     </table>
                 </div> )}
@@ -499,7 +555,7 @@ function HomePage() {
       );
   };
 
-  // Form and Output View (UI Elements remain largely the same, logic for handlers updated above)
+  // Form and Output View (No changes needed in rendering logic itself)
   const renderFormView = () => (
     <>
       {/* --- Input Card --- */}
@@ -623,7 +679,7 @@ function HomePage() {
                                 className={`px-5 py-3 text-white font-semibold rounded-lg shadow-md transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 ${isGeneratingInsights || !userInput.trim() || !analysisData ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700'}`}
                              >
                                 <svg className='w-8 h-7' viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M11.5003 12H5.41872M5.24634 12.7972L4.24158 15.7986C3.69128 17.4424 3.41613 18.2643 3.61359 18.7704C3.78506 19.21 4.15335 19.5432 4.6078 19.6701C5.13111 19.8161 5.92151 19.4604 7.50231 18.7491L17.6367 14.1886C19.1797 13.4942 19.9512 13.1471 20.1896 12.6648C20.3968 12.2458 20.3968 11.7541 20.1896 11.3351C19.9512 10.8529 19.1797 10.5057 17.6367 9.81135L7.48483 5.24303C5.90879 4.53382 5.12078 4.17921 4.59799 4.32468C4.14397 4.45101 3.77572 4.78336 3.60365 5.22209C3.40551 5.72728 3.67772 6.54741 4.22215 8.18767L5.24829 11.2793C5.34179 11.561 5.38855 11.7019 5.407 11.8459C5.42338 11.9738 5.42321 12.1032 5.40651 12.231C5.38768 12.375 5.34057 12.5157 5.24634 12.7972Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M11.5003 12H5.41872M5.24634 12.7972L4.24158 15.7986C3.69128 17.4424 3.41613 18.2643 3.61359 18.7704C3.78506 19.21 4.15335 19.5432 4.6078 19.6701C5.13111 19.8161 5.92151 19.4604 7.50231 18.7491L17.6367 14.1886C19.1797 13.4942 19.9512 13.1471 20.1896 12.6648C20.3968 12.2458 20.3968 11.7541 20.1896 11.3351C19.9512 10.8529 19.1797 10.5057 17.6367 9.81135L7.48483 5.24303C5.90879 4.53382 5.12078 4.17921 4.59799 4.32468C4.14397 4.45101 3.77572 4.78336 3.60365 5.22209C3.40551 5.72728 3.67772 6.54741 4.22215 8.18767L5.24829 11.2793C5.34179 11.561 5.38855 11.7019 5.407 11.8459C5.42338 11.9738 5.42321 12.1032 5.40651 12.231C5.38768 12.375 5.34057 12.5157 5.24634 12.7972Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/> {/* Changed stroke to currentColor */}
 </svg>
                              </button>
                          </form>
@@ -656,6 +712,8 @@ function HomePage() {
          .scrollbar-thumb-purple-300 { scrollbar-color: #c4b5fd #ede9fe; }
          ::-webkit-scrollbar { width: 8px; height: 8px; }
          .animate-bounce { animation: bounce 1.4s infinite ease-in-out both; }
+         /* Ensure send button icon color is inherited */
+         button svg path { stroke: currentColor; }
       `}</style>
       {currentView === 'form' ? renderFormView() : renderMetricsView()}
     </div>
