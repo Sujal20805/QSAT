@@ -214,7 +214,7 @@ def get_top_wavelengths():
     return jsonify(top_rankings), 200
 
 @app.route('/api/metrics', methods=['GET'])
-def get_metrics():
+def get_metrics_v2():
     """Returns the pre-calculated model performance metrics."""
     if not mymodel_utils.get_status():
         return jsonify({"error": "Service not ready, initialization failed."}), 503
@@ -236,7 +236,108 @@ def get_metrics():
 
     return jsonify(metrics), 200
 
-# --- Main Execution ---
+# --- START OF NEW CODE FOR GEMINI INTEGRATION ---
+
+# Load environment variables (for API key)
+from dotenv import load_dotenv
+load_dotenv() # Load variables from .env file
+
+import google.generativeai as genai
+
+# --- Gemini Configuration ---
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+gemini_configured = False
+gemini_model = None
+
+if not GEMINI_API_KEY:
+    print("WARNING: GEMINI_API_KEY not found in environment variables. /api/get-insights endpoint will not work.")
+else:
+    try:
+        genai.configure(api_key=GEMINI_API_KEY)
+        # Initialize the model you want to use
+        gemini_model = genai.GenerativeModel('gemini-1.5-flash-latest') # Or another suitable model
+        gemini_configured = True
+        print("Gemini AI configured successfully.")
+    except Exception as e:
+        print(f"ERROR: Failed to configure Gemini AI: {e}")
+        gemini_configured = False
+
+@app.route('/api/get-insights', methods=['POST'])
+def get_gemini_insights():
+    """
+    Endpoint to receive a prompt (initial soil data or user message)
+    and get insights from Gemini.
+    Expects JSON: { "message": string }
+    """
+    if not mymodel_utils.get_status():
+        return jsonify({"error": "Soil analysis service not ready."}), 503
+
+    if not gemini_configured or gemini_model is None:
+        return jsonify({"error": "Gemini AI service is not configured or available."}), 503
+
+    try:
+        data = request.get_json()
+        if not data or 'message' not in data:
+            return jsonify({"error": "Invalid request: 'message' missing in JSON body."}), 400
+
+        user_message = data['message']
+        if not isinstance(user_message, str) or not user_message.strip():
+            return jsonify({"error": "Invalid request: 'message' must be a non-empty string."}), 400
+
+        print(f"Sending to Gemini: {user_message[:100]}...") # Log truncated message
+
+        # --- Call Gemini API ---
+        # Consider adding more robust error handling for API calls
+        # For conversational chat, you might manage history differently,
+        # but for simple Q&A, generating based on the single message is fine.
+        response = gemini_model.generate_content(user_message)
+
+        # Basic check if the response has text
+        # More complex checks might be needed depending on the Gemini model/response structure
+        if response and hasattr(response, 'text') and response.text:
+            print("Received response from Gemini.")
+            return jsonify({"response": response.text}), 200
+        else:
+             # Log the full response if it's unusual
+            print(f"Warning: Received unexpected or empty response from Gemini: {response}")
+            return jsonify({"error": "Received no content from Gemini AI."}), 500
+
+    except Exception as e:
+        print(f"ERROR in /api/get-insights: {e}")
+        import traceback
+        traceback.print_exc()
+        # Be careful not to expose sensitive details in production error messages
+        return jsonify({"error": "An error occurred while communicating with the Gemini AI service."}), 500
+
+# Optionally, update health check to include Gemini status
+@app.route('/api/health/v2', methods=['GET']) # New route to avoid breaking old one
+def health_check_v2():
+    """Basic health check endpoint including Gemini status."""
+    soil_initialized = mymodel_utils.get_status()
+    status_code = 200
+    response_data = {
+        "soil_service_status": "OK" if soil_initialized else "Error",
+        "gemini_service_status": "OK" if gemini_configured else "Error",
+        "message": []
+    }
+    if soil_initialized:
+        response_data["message"].append("Soil analysis application initialized.")
+    else:
+        response_data["message"].append("Soil analysis application failed to initialize.")
+        status_code = 500
+    if gemini_configured:
+         response_data["message"].append("Gemini AI service configured.")
+    else:
+         response_data["message"].append("Gemini AI service NOT configured (check API key).")
+         # Don't necessarily make the whole health check fail if Gemini is down
+         # status_code = 500 # Uncomment if Gemini is critical
+
+    return jsonify(response_data), status_code
+
+
+# --- END OF NEW CODE FOR GEMINI INTEGRATION ---
+
+# Make sure the following lines are the VERY LAST lines in the file
 if __name__ == '__main__':
     # Use a production-ready server like Gunicorn or Waitress instead of app.run()
     # For local development:
